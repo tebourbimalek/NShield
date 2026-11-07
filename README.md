@@ -73,7 +73,9 @@ NShield enforces one guardrail for you, but you stay responsible for everything
 else:
 
 - The backend **refuses to start** until you list the subnet(s) you own in
-  `backend/config.yaml` (`allowed_subnets`).
+  `backend/config.yaml` (`allowed_subnets`), OR confirm the detected network
+  in the one-time dialog that appears on a new Wi-Fi. The dialog only offers
+  to allow-list the network you are currently connected to.
 - The refused subnet is checked again **on every block action**, and blocking
   yourself or the gateway is not possible.
 - Every action is written to a local timestamped log file.
