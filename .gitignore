@@ -25,8 +25,9 @@ backend/logs/
 # Ship config.example.yaml instead; copy to config.yaml on first run.
 backend/config.yaml
 
-# ---- OS / editor ---------------------------------------------------------
-.DS_Store
+# Screenshots dropped in the repo root by the user (personal)
+Capture d'écran*
+Capture d?écran*
 Thumbs.db
 desktop.ini
 .vscode/
