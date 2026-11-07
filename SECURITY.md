@@ -18,9 +18,9 @@ within 30 days where possible.
 
 ## Scope notes
 
-NetGuard is a *local network control tool*. The threat model assumes:
+NShield is a *local network control tool*. The threat model assumes:
 
-- The machine running NetGuard is trusted and under the user's control.
+- The machine running NShield is trusted and under the user's control.
 - The LAN is the user's own network (see the legal warning).
 - The phone-access passcode is a convenience gate, not a security boundary:
   it is a short code sent over plain HTTP on the LAN. Repeated wrong

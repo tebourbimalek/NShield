@@ -8,7 +8,7 @@ Windows-only: on other platforms qos_set_cap/qos_clear_cap are no-ops.
 import subprocess
 
 import logging
-logger = logging.getLogger("netguard")
+logger = logging.getLogger("nshield")
 
 QOS_MIN_KBPS = 8          # below this the OS throttling granularity is noise
 QOS_BITS_FLOOR = 8192     # 1 KB/s absolute floor for the policy value
@@ -23,7 +23,7 @@ def _ps_run(command: str):
 
 
 def _qos_name(ip: str, kind: str) -> str:
-    return f"netguard_cap_{kind}_{ip}"
+    return f"nshield_cap_{kind}_{ip}"
 
 
 def _qos_policy_args(kind: str, ip: str, bits: int) -> str:

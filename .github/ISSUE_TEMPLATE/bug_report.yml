@@ -27,5 +27,5 @@ body:
     id: log
     attributes:
       label: Relevant log lines
-      description: Tail of backend/logs/netguard.log (no secrets beyond local IPs).
+      description: Tail of backend/logs/nshield.log (no secrets beyond local IPs).
       render: shell

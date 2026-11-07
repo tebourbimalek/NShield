@@ -46,7 +46,7 @@
 /* ------------------------------------------------------------------------- *
  * Daytime look. The page paints itself with the dark zinc palette; picking
  * the light look simply re-points those same palette entries, so nothing
- * in the layout needs to know which one is active. Key: "netguard-theme".
+ * in the layout needs to know which one is active. Key: "nshield-theme".
  * ------------------------------------------------------------------------- */
 html[data-theme="light"] {
   color-scheme: light;

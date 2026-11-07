@@ -1,5 +1,5 @@
 """
-NetGuard — ARP spoofing engine.
+NShield — ARP spoofing engine.
 
 One daemon thread per blocked device keeps poisoning *both* sides of the
 gateway<->target association. Every burst sends exactly two authentic-looking
@@ -21,7 +21,7 @@ from typing import Callable, Dict, Optional, Set
 
 from scapy.all import ARP, Ether, IPv6, ICMPv6ND_NA, ICMPv6NDOptDstLLAddr, sendp
 
-logger = logging.getLogger("netguard.spoofer")
+logger = logging.getLogger("nshield.spoofer")
 
 
 # --------------------------------------------------------------------------- #
@@ -81,7 +81,7 @@ class BlockWorker(threading.Thread):
         router_ll: Optional[str] = None,
         v6_addr_fn: Optional[Callable[[], dict]] = None,
     ) -> None:
-        super().__init__(name=f"netguard-spoof-{target_ip}", daemon=True)
+        super().__init__(name=f"nshield-spoof-{target_ip}", daemon=True)
         self.iface = iface
         self.our_mac = our_mac
         self.gateway_ip = gateway_ip

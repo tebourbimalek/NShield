@@ -1,5 +1,5 @@
 @echo off
-:: NetGuard starter (run directly, or elevated with "go" by the hidden launcher).
+:: NShield starter (run directly, or elevated with "go" by the hidden launcher).
 :: Ordinary double-click: a dark splash shows until the page opens.
 :: Console windows are fully hidden along this path.
 setlocal
@@ -31,29 +31,29 @@ exit /b
 :: ----------------------------------------------- first-run setup (once) --- -
 if not exist "backend\config.yaml" if exist "backend\config.example.yaml" copy "backend\config.example.yaml" "backend\config.yaml" >nul
 if not exist "backend\venv\Scripts\pythonw.exe" (
-    echo [NetGuard] First run: installing everything that is needed. Once only.
+    echo [NShield] First run: installing everything that is needed. Once only.
     python -m venv "backend\venv" 2>nul || py -3 -m venv "backend\venv"
     if not exist "backend\venv\Scripts\python.exe" (
-        echo [NetGuard] ERROR: Python 3.11+ was not found. Install it from python.org and try again.
+        echo [NShield] ERROR: Python 3.11+ was not found. Install it from python.org and try again.
         pause & exit /b 1
     )
     "backend\venv\Scripts\python.exe" -m pip install -r "backend\requirements.txt"
 )
 if not exist "frontend\dist\index.html" (
-    echo [NetGuard] First run: building the web page. Once only.
+    echo [NShield] First run: building the web page. Once only.
     pushd frontend
     call npm install
     call npm run build
     popd
     if not exist "frontend\dist\index.html" (
-        echo [NetGuard] ERROR: the web page could not be built - see the messages above.
+        echo [NShield] ERROR: the web page could not be built - see the messages above.
         pause & exit /b 1
     )
 )
 
 :: create a desktop shortcut on first run (one icon for everything)
-if not exist "%USERPROFILE%\Desktop\NetGuard.lnk" (
-    powershell -NoProfile -Command "$ws = New-Object -ComObject WScript.Shell; $s = $ws.CreateShortcut([Environment]::GetFolderPath('Desktop') + '\NetGuard.lnk'); $s.TargetPath = '%~f0'; $s.WorkingDirectory = '%~dp0'; $s.IconLocation = '%~dp0backend\assets\app.ico'; $s.Description = 'NetGuard - manage your home network'; $s.Save()"
+if not exist "%USERPROFILE%\Desktop\NShield.lnk" (
+    powershell -NoProfile -Command "$ws = New-Object -ComObject WScript.Shell; $s = $ws.CreateShortcut([Environment]::GetFolderPath('Desktop') + '\NShield.lnk'); $s.TargetPath = '%~f0'; $s.WorkingDirectory = '%~dp0'; $s.IconLocation = '%~dp0backend\assets\app.ico'; $s.Description = 'NShield - manage your home network'; $s.Save()"
 )
 
 :: --- already running? toggle: stop it instead of starting ------------------

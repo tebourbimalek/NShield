@@ -1,4 +1,4 @@
-# NetGuard backend — Python 3.11+ (tested on 3.13)
+# NShield backend — Python 3.11+ (tested on 3.13)
 # If a pinned release is unavailable for your Python version,
 # install the latest stable instead: pip install --upgrade <package>
 

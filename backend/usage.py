@@ -1,4 +1,4 @@
-"""Metered-usage history for NetGuard.
+"""Metered-usage history for NShield.
 
 Counting is only possible while a device is being watched (checkpoint mode -
 its traffic passes through this PC), so the history covers exactly what was
@@ -19,7 +19,7 @@ USAGE_PATH = DATA_DIR / "usage.json"
 
 # Shared with main.py's logger (same name -> same logger instance).
 import logging
-logger = logging.getLogger("netguard")
+logger = logging.getLogger("nshield")
 
 _usage_lock = threading.RLock()
 USAGE: dict = {"days": {}}          # "YYYY-MM-DD" -> mac -> {"up": int, "down": int}

@@ -1,5 +1,5 @@
 """
-NetGuard - FastAPI backend + static frontend server.
+NShield - FastAPI backend + static frontend server.
 
 Runs as a single local process:
   * REST API under /api/*
@@ -54,14 +54,14 @@ from qos import *    # noqa: E402,F403  (QOS_MIN_KBPS, qos_set_cap, qos_clear_ca
 
 VERSION = "1.0.0"
 
-logger = logging.getLogger("netguard")
+logger = logging.getLogger("nshield")
 
 DEFAULT_CONFIG: Dict[str, object] = {
     "allowed_subnets": [],
     "scan_interval": 12,
     "arp_scan_timeout": 2,
     "spoof_interval": 2,
-    "log_file": "logs/netguard.log",
+    "log_file": "logs/nshield.log",
     "server_port": 8000,
 }
 
@@ -179,7 +179,7 @@ def windows_notify(title: str, text: str) -> None:
 
 def announce_new_device(state: "AppState", rec: dict) -> None:
     """
-    Called (sniff thread / monitor thread) when a device joins that NetGuard
+    Called (sniff thread / monitor thread) when a device joins that NShield
     has never alerted about before (re-alerts at most once per day). Pushes a
     live banner to the page and, if enabled, a Windows notification.
     """
@@ -209,7 +209,7 @@ def announce_new_device(state: "AppState", rec: dict) -> None:
         or rec.get("hostname") or rec.get("vendor") \
         or f"unknown device {rec.get('ip')}"
     logger.info("JOIN ALERT: %s (%s)", label, rec.get("ip"))
-    windows_notify("NetGuard", f"A new device just joined your Wi-Fi: {label}")
+    windows_notify("NShield", f"A new device just joined your Wi-Fi: {label}")
     state.push_event({
         "type": "new_device",
         "device": {
@@ -437,8 +437,8 @@ def identify_sweep_loop(state: "AppState") -> None:
 # Phone access (LAN reachability + passcode) and Windows auto-start
 # --------------------------------------------------------------------------- #
 
-AUTOSTART_TASK = "NetGuard"
-PASS_HEADER = "x-netguard-pass"
+AUTOSTART_TASK = "NShield"
+PASS_HEADER = "x-nshield-pass"
 OPEN_API_PATHS = {"/api/gate"}
 
 
@@ -494,7 +494,7 @@ def firewall_rule_set(port: int, enable: bool) -> bool:
     """Open/close the Windows Firewall for the page port, so phones can reach it."""
     if sys.platform != "win32":
         return False
-    rule = "NetGuard page"
+    rule = "NShield page"
     if enable:
         args = [
             "netsh", "advfirewall", "firewall", "add", "rule",
@@ -567,7 +567,7 @@ def load_config() -> dict:
     if not cfg_path.exists():
         sys.stderr.write(
             f"[{cfg_path}] not found.\n"
-            "Create it from the shipped template (see README) before starting NetGuard.\n"
+            "Create it from the shipped template (see README) before starting NShield.\n"
         )
         sys.exit(1)
     with open(cfg_path, "r", encoding="utf-8") as fh:
@@ -1237,7 +1237,7 @@ def quota_release_and_block(state: "AppState", ip: str) -> None:
     note = f"{label} reached today's data budget and is now offline."
     logger.info("QUOTA %s (%s) - released=%s, blocked=%s",
                 label, ip, released, ok)
-    windows_notify("NetGuard", note)
+    windows_notify("NShield", note)
     state.push_event({
         "type": "notice",
         "text": f"{label} has used up today's data budget "
@@ -1392,7 +1392,7 @@ async def lifespan(app: FastAPI):
     assert state is not None
     state.loop = asyncio.get_running_loop()
 
-    logger.info("NetGuard backend v%s started - http://127.0.0.1:%s (privileged=%s)",
+    logger.info("NShield backend v%s started - http://127.0.0.1:%s (privileged=%s)",
                 VERSION, state.cfg["server_port"], state.privileged)
     if not state.privileged:
         explain_privileges("warning")
@@ -1408,16 +1408,16 @@ async def lifespan(app: FastAPI):
         on_identify=identify_callback,
     )
     threading.Thread(
-        target=identify_sweep_loop, args=(state,), name="netguard-ident", daemon=True
+        target=identify_sweep_loop, args=(state,), name="nshield-ident", daemon=True
     ).start()
     threading.Thread(
-        target=monitor_loop, args=(state,), name="netguard-monitor", daemon=True
+        target=monitor_loop, args=(state,), name="nshield-monitor", daemon=True
     ).start()
     threading.Thread(
-        target=flow_rate_loop, args=(state,), name="netguard-flow-rates", daemon=True
+        target=flow_rate_loop, args=(state,), name="nshield-flow-rates", daemon=True
     ).start()
     threading.Thread(
-        target=neighbor_guard_loop, args=(state,), name="netguard-neighbor-guard", daemon=True
+        target=neighbor_guard_loop, args=(state,), name="nshield-neighbor-guard", daemon=True
     ).start()
 
     yield
@@ -1429,13 +1429,13 @@ async def lifespan(app: FastAPI):
 def explain_privileges(level: str = "warning") -> None:
     if sys.platform == "win32":
         msg = (
-            "NetGuard is NOT running as Administrator. ARP spoofing needs raw "
+            "NShield is NOT running as Administrator. ARP spoofing needs raw "
             "sockets: start run.bat as Administrator and make sure Npcap is "
             "installed (https://npcap.com)."
         )
     else:
         msg = (
-            "NetGuard is NOT running as root. ARP spoofing needs raw sockets: "
+            "NShield is NOT running as root. ARP spoofing needs raw sockets: "
             "run `sudo ./run.sh` (Linux/macOS)."
         )
     if level == "notice":
@@ -1444,7 +1444,7 @@ def explain_privileges(level: str = "warning") -> None:
         logger.error(msg)
 
 
-app = FastAPI(title="NetGuard", version=VERSION, lifespan=lifespan)
+app = FastAPI(title="NShield", version=VERSION, lifespan=lifespan)
 
 
 # ------------------------------ REST routes ------------------------------ #
@@ -1505,7 +1505,7 @@ def require_privileged(state: AppState) -> None:
         raise HTTPException(
             status_code=403,
             detail=(
-                "NetGuard needs elevated privileges. "
+                "NShield needs elevated privileges. "
                 + ("run.bat as Administrator + Npcap (Windows)."
                    if sys.platform == "win32"
                    else "sudo ./run.sh (Linux/macOS).")
@@ -1529,7 +1529,7 @@ def require_compliant(state: AppState) -> None:
             detail=(
                 f"Network mismatch: detected {state.net['cidr']} is not inside "
                 f"allowed_subnets ({', '.join(str(s) for s in state.subnets)}). "
-                "Update backend/config.yaml and restart NetGuard."
+                "Update backend/config.yaml and restart NShield."
             ),
         )
 
@@ -1659,7 +1659,7 @@ async def api_shutdown():
         except Exception:
             sys.exit(0)
     threading.Thread(target=_exit_later, daemon=True).start()
-    return models.ActionResponse(ok=True, message="NetGuard is stopping. Everything is restored.")
+    return models.ActionResponse(ok=True, message="NShield is stopping. Everything is restored.")
 
 
 @app.post("/api/restore-all", response_model=models.ActionResponse)
@@ -1943,12 +1943,12 @@ async def phone_gate(request: Request, call_next):
             )
         if needs_pass(request):
             # count only real attempts (a passcode was supplied but did not match)
-            if request.headers.get("x-netguard-pass"):
+            if request.headers.get("x-nshield-pass"):
                 _record_pass_failure(client_ip)
             from fastapi.responses import JSONResponse
             return JSONResponse(
                 status_code=401,
-                content={"detail": "Please enter the NetGuard passcode."},
+                content={"detail": "Please enter the NShield passcode."},
             )
     return await call_next(request)
 
@@ -2109,7 +2109,7 @@ def export_usage(days: int = 30):
     return Response(
         content=body,
         media_type="text/csv; charset=utf-8",
-        headers={"Content-Disposition": 'attachment; filename="netguard-usage.csv"'},
+        headers={"Content-Disposition": 'attachment; filename="nshield-usage.csv"'},
     )
 
 
@@ -2203,7 +2203,7 @@ else:
     @app.get("/", response_class=HTMLResponse, include_in_schema=False)
     def _no_frontend() -> str:
         return (
-            "<h2>NetGuard backend is running</h2>"
+            "<h2>NShield backend is running</h2>"
             "<p>The React frontend has not been built yet.</p>"
             "<p>Run <code>npm install &amp;&amp; npm run build</code> inside "
             "the <code>frontend/</code> folder, then restart the backend."
@@ -2221,7 +2221,7 @@ def refuse_startup(reason: str) -> None:
 
     box = '+' + '-' * 66 + '+'
     banner = [box]
-    banner += [row('NetGuard REFUSED TO START'), row('')]
+    banner += [row('NShield REFUSED TO START'), row('')]
     banner += [row(reason[:64]), row('')]
     banner += [
         row('Edit backend/config.yaml and list the subnet(s) you own'),

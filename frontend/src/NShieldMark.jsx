@@ -1,5 +1,5 @@
 /**
- * NetGuardMark - the NetGuard "N + Shield" mark (Concept 2).
+ * NShieldMark - the NShield "N + Shield" mark (Concept 2).
  *
  * A shield outline whose interior is the letter N: the left stroke and the
  * right stroke are monochrome, the diagonal that connects them is the cyan
@@ -9,7 +9,7 @@
  * - accent defaults to the brand cyan; pass accent={color} to monochrome it.
  * - color defaults to the brand foreground (#E5E7EB).
  */
-export default function NetGuardMark({ size = 24, color = "#E5E7EB", accent = "#22D3EE", className = "" }) {
+export default function NShieldMark({ size = 24, color = "#E5E7EB", accent = "#22D3EE", className = "" }) {
   return (
     <svg
       width={size}
@@ -17,7 +17,7 @@ export default function NetGuardMark({ size = 24, color = "#E5E7EB", accent = "#
       viewBox="0 0 512 512"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      aria-label="NetGuard"
+      aria-label="NShield"
       role="img"
       className={className}
     >
@@ -49,7 +49,7 @@ export default function NetGuardMark({ size = 24, color = "#E5E7EB", accent = "#
   );
 }
 
-export function NetGuardLogo({ size = 48, color = "#E5E7EB", accent = "#22D3EE" }) {
+export function NShieldLogo({ size = 48, color = "#E5E7EB", accent = "#22D3EE" }) {
   return (
     <div
       style={{
@@ -58,7 +58,7 @@ export function NetGuardLogo({ size = 48, color = "#E5E7EB", accent = "#22D3EE" 
         gap: size * 0.28,
       }}
     >
-      <NetGuardMark size={size} color={color} accent={accent} />
+      <NShieldMark size={size} color={color} accent={accent} />
       <span
         style={{
           color,
@@ -69,7 +69,7 @@ export function NetGuardLogo({ size = 48, color = "#E5E7EB", accent = "#22D3EE" 
           lineHeight: 1,
         }}
       >
-        NetGuard
+        NShield
       </span>
     </div>
   );

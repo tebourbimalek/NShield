@@ -1,11 +1,11 @@
 # -*- mode: python ; coding: utf-8 -*-
-"""PyInstaller spec for NetGuard (Windows, one-dir build).
+"""PyInstaller spec for NShield (Windows, one-dir build).
 
 Build from the repo root:
     pip install pyinstaller
-    pyinstaller packaging/netguard.spec
+    pyinstaller packaging/nshield.spec
 
-The resulting folder is `dist/NetGuard/`. Ship it zipped, or feed it to
+The resulting folder is `dist/NShield/`. Ship it zipped, or feed it to
 Inno Setup (packaging/installer.iss) to produce a one-click installer.
 """
 
@@ -56,7 +56,7 @@ exe = EXE(
     a.scripts,
     [],
     exclude_binaries=True,
-    name="NetGuard",
+    name="NShield",
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -80,5 +80,5 @@ coll = COLLECT(
     strip=False,
     upx=True,
     upx_exclude=[],
-    name="NetGuard",
+    name="NShield",
 )
