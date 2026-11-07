@@ -172,7 +172,6 @@ is `dist\NetGuard-Setup.exe`.
 | "NetGuard is NOT running with elevated privileges" | Windows: start `run.bat` as Administrator. Linux/macOS: `sudo ./run.sh`. |
 | Scan finds nothing / scapy errors | Windows: is **Npcap** installed? Linux: `sudo apt install libpcap-dev`. |
 | Blocked devices come back online after ~30 s | Some router/APs detect ARP anomalies; NetGuard re-poisons every 2 s, which normally overrules this. |
-| Want a sanity check of your packet stack | `backend/selftest.py` poisons **only this machine's own** gateway entry and restores it after a few seconds — a zero-impact end-to-end test of the ARP engine. |
 | `pip` refuses the pinned scapy version on your Python | `pip install --upgrade scapy` inside the venv — any 2.5+ works. |
 | Browser can't connect | Backend runs on `127.0.0.1:8000`; check the console window `run.bat` opened. |
 
