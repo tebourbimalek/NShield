@@ -1,15 +1,24 @@
 # NetGuard
 
-A modern network device controller for **your own home lab**. NetGuard discovers
-every device on your subnet (ARP scan), lets you watch them go online/offline live
+[![CI](https://github.com/tebourbimalek/NetGuard/actions/workflows/ci.yml/badge.svg)](https://github.com/tebourbimalek/NetGuard/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/)
+[![Platform: Windows-first](https://img.shields.io/badge/platform-Windows--first-0078D6.svg)]()
+
+> **A modern, safety-first network device controller for your own home lab.**
+> Discover every device on your subnet, watch them go online/offline live, and
+> cut any device's internet with one toggle — NetCut-style isolation, but with
+> consent, an allow-list, auto-restore on exit, and a UI anyone can read.
+
+NetGuard discovers every device on your subnet (ARP scan), streams live status
 over a WebSocket, and — with one toggle per device — performs two-way ARP
 spoofing (NetCut-style isolation) to cut that device's traffic to the gateway.
-Turning the device toggle (or the master switch) off sends restoration packets
-that fix every touched ARP cache.
+Turning the toggle (or the master switch) off sends restoration packets that
+fix every touched ARP cache.
 
 **Stack:** Python 3.11+ / Scapy / FastAPI (REST + WebSocket) · React + Vite +
-TailwindCSS (dark UI, Lucide icons) · the Python process serves the built
-frontend, so the whole app is one local URL.
+TailwindCSS (dark & light UI, Lucide icons) · the Python process serves the
+built frontend, so the whole app is one local URL.
 
 > **Platform note:** NetGuard is **Windows-first**. Device blocking (ARP/NDP
 > spoofing) and the web UI work on Linux/macOS too, but speed caps (Windows
@@ -18,13 +27,44 @@ frontend, so the whole app is one local URL.
 
 ---
 
+## ✨ Features
+
+- **One-click isolation** — per-device toggle cuts a phone/laptop off the
+  internet; master switch arms/disarms everything at once.
+- **Live status** — ARP scan + passive sniffing; devices appear/disappear in
+  real time over a WebSocket. No technical jargon anywhere in the UI.
+- **Dual-stack blocking** — ARP (IPv4) + NDP (IPv6) poisoning, so a device
+  can't sneak out over IPv6.
+- **Per-device metering** — checkpoint mode routes a watched device's traffic
+  through your PC and counts bytes up/down in KB/s.
+- **Speed caps** — Windows QoS throttling on watched devices (KB/s), lifted
+  automatically when watching stops.
+- **Daily data budgets** — set a MB/day limit per device; over-budget devices
+  are cut off automatically until the next day.
+- **Usage history & reports** — per-MAC, per-day history that survives
+  restarts; export to CSV (7 or 30 days) from the Options panel.
+- **Friendly names & icons** — rename devices and pick an icon; remembered
+  forever by MAC. Auto-recognition via mDNS/SSDP/NetBIOS/web probes.
+- **New-device alerts** — Windows balloon + in-app banner when a stranger
+  joins; 24 h dedup so you're not spammed.
+- **Phone access** — passcode-gated remote control from any phone on the
+  Wi-Fi, with a QR code in Options.
+- **Start with Windows** — hidden autostart task (no console window).
+- **Relax mode** — flip protection off to let everyone back online instantly.
+- **Light & dark themes** — toggle in the header, saved per browser.
+- **Speed sparkline** — tiny live graph beside watched devices.
+- **Safety guardrails** — consent modal, allow-listed subnets, compliance
+  watch, RotatingFileHandler logs (5 MB × 3), auto-restore on exit.
+
+---
+
 ## ⚠️ Legal & ethical warning
 
 ARP spoofing cuts traffic of devices on a network you **do not own** just as
-easily as on your own. Using NetGuard on networks without explicit authorization
-(school, work, hotel, your landlord's Wi-Fi…) may be **illegal** (e.g. computer
-fraud / misuse laws) and is always a serious breach of trust that can disrupt
-other people's connectivity.
+easily as on your own. Using NetGuard on networks without explicit
+authorization (school, work, hotel, your landlord's Wi-Fi…) may be **illegal**
+(e.g. computer fraud / misuse laws) and is always a serious breach of trust
+that can disrupt other people's connectivity.
 
 > **Only use on networks you own or have written permission to manage.
 > Unauthorized use may be illegal in your jurisdiction.**
@@ -43,44 +83,65 @@ Use it only on networks you own or have written permission to test.
 
 ---
 
-## Project layout
+## 📸 Screenshots
+
+> _Drop screenshots into `docs/screenshots/` and link them here. A 10-second
+> GIF of block/unblock + the sparkline is the single biggest driver of stars
+> for a tool like this._
+
+| Dark theme | Light theme |
+|---|---|
+| ![dark](docs/screenshots/dark.png) | ![light](docs/screenshots/light.png) |
+
+---
+
+## 📁 Project layout
 
 ```
 netguard/
-├── run.bat                      # Windows launcher (self-elevates to Administrator)
+├── run.bat                      # Windows launcher (self-elevates)
 ├── run.sh                       # Linux/macOS launcher (re-launches with sudo)
+├── stop.bat                     # manual stop (advanced; the desktop icon toggles too)
+├── HOW_TO_USE.md                # end-user quick start
 ├── backend/
 │   ├── main.py                  # FastAPI app, REST + WebSocket, static serving, monitor
 │   ├── usage.py                 # metered-usage store + quotas + CSV helpers
 │   ├── qos.py                   # Windows QoS speed-cap helpers
-│   ├── scanner.py               # ARP scan / liveness ping / hostname & vendor lookup / sniffing
-│   ├── spoofer.py               # ARP spoofing engine (one thread per blocked device)
+│   ├── scanner.py               # ARP scan / liveness ping / hostname & vendor lookup
+│   ├── spoofer.py               # ARP/NDP spoofing engine (one thread per device)
 │   ├── models.py                # Pydantic API models
-│   ├── config.yaml              # allow-listed subnets + tuning + log path
-│   └── requirements.txt
-└── frontend/
-    ├── package.json             # Vite + React + Tailwind, pinned versions
-    ├── vite.config.js           # dev proxy: /api → 127.0.0.1:8000 (REST + WS)
-    └── src/                     # App.jsx, DeviceTable.jsx, useDevices.js, index.css …
+│   ├── config.example.yaml      # template — copied to config.yaml on first run
+│   ├── requirements.txt
+│   └── assets/app.ico           # desktop / installer icon
+├── frontend/
+│   ├── package.json             # Vite + React + Tailwind, pinned versions
+│   ├── vite.config.js           # dev proxy: /api → 127.0.0.1:8000 (REST + WS)
+│   └── src/                     # App.jsx, DeviceTable.jsx, useDevices.js, index.css …
+└── packaging/
+    ├── build.bat                # builds frontend + PyInstaller bundle
+    ├── netguard.spec            # PyInstaller spec (windowless)
+    └── installer.iss            # Inno Setup installer
 ```
 
 ---
 
-## Setup
+## 🚀 Setup
 
 ### Windows
 
-1. **Install Npcap** → <https://npcap.com> (during install, tick *support raw
-   802.11 traffic* only if you also want wireless monitoring; "WinPcap API
-   compatible" default is fine).
+1. **Install Npcap** → <https://npcap.com> (defaults are fine; tick *support
+   raw 802.11 traffic* only for wireless monitoring).
 2. Install **Python 3.11+** (python.org — tick *Add to PATH*) and **Node.js 18+**
    (nodejs.org).
 3. Double-click **`run.bat`**. It self-elevates to Administrator, creates the
    venv, installs Python + npm dependencies, builds the frontend, starts the
-   server and opens `http://127.0.0.1:8000` in your browser.
+   server and opens `http://127.0.0.1:8000`.
 4. The first start **refuses to run on purpose**: open
-   `backend/config.yaml` and allow-list your subnet — see *Configuration* below —
-   then start `run.bat` again.
+   `backend/config.yaml` and allow-list your subnet — see *Configuration*
+   below — then start `run.bat` again.
+
+A **NetGuard** shortcut is created on your Desktop on first run; click it to
+start or stop the app afterwards (no console window, ever).
 
 ### Linux
 
@@ -117,7 +178,7 @@ port 8000.
 
 ---
 
-## Configuration — `backend/config.yaml`
+## ⚙️ Configuration — `backend/config.yaml`
 
 ```yaml
 allowed_subnets:          # ← NetGuard REFUSES to start while this is empty!
@@ -137,22 +198,37 @@ Optional: full vendor names for every NIC — uncomment `manuf` in
 
 ---
 
-## Using the app
+## 📱 Using the app
 
-1. **Consent modal** — confirm you own the network (saved, shown once per browser).
-2. **Scan network** — ARP sweep of the allow-listed subnet; results stream in as
-   the WebSocket pushes snapshots (also between scans, passive sniffing keeps
-   status fresh).
+1. **Consent modal** — confirm you own the network (saved, shown once per
+   browser).
+2. **Scan network** — ARP sweep of the allow-listed subnet; results stream in
+   as the WebSocket pushes snapshots (passive sniffing keeps status fresh
+   between scans).
 3. **Master switch** (`Protection active`) — enables/disables all spoofing at
    once. Every row toggle is disabled while protection is idle.
 4. **Row toggle** — arms a per-device spoof thread (target and gateway are
    poisoned every 2 s). The device's status pill turns red *Blocked*.
-5. Unblock or disabling the master switch — and closing the app — immediately
-   sends corrective ARP packets so both ARP caches recover.
-6. **Action log** — peek at `backend/logs/netguard.log` from the footer.
+5. **Unblock** or disabling the master switch — and stopping the app —
+   immediately sends corrective ARP packets so both ARP caches recover.
+6. **Gauge icon** on a watched device — set speed limits (KB/s) and a daily
+   data budget (MB).
+7. **Gear icon (Options)** — phone access passcode, start-with-Windows,
+   alerts, and *Save a report* (CSV of usage, 7 or 30 days).
+8. **Sun/Moon icon** — switch between dark and light look.
+9. **Action log** — peek at `backend/logs/netguard.log` from the footer.
+
+### Phone access
+
+Enable *Phone access* in Options; a 4-digit passcode is minted. From any phone
+on the Wi-Fi, open the LAN URL shown in Options (or scan the QR code). The
+passcode is remembered on that phone. A firewall rule ("NetGuard page") is
+toggled with the setting. The passcode is a convenience gate, not a security
+boundary — see `SECURITY.md`.
 
 ---
-## Building a standalone installer
+
+## 📦 Building a standalone installer
 
 NetGuard ships as source. To produce a one-click Windows installer:
 
@@ -165,7 +241,7 @@ is `dist\NetGuard-Setup.exe`.
 
 ---
 
-## Troubleshooting
+## 🛠️ Troubleshooting
 
 | Symptom | Fix |
 |---|---|
@@ -177,6 +253,41 @@ is `dist\NetGuard-Setup.exe`.
 
 **Note for wireless Linux setups:** some managed-mode Wi-Fi drivers filter
 foreign ARP frames. NetGuard works best where raw ARP injection is allowed —
-wired NICs or Wi-Fi adapters with Npcap/home-lab-friendly drivers. All home-lab
-traffic goes to *your own* switch/AP only, so nothing you do here can leave your
-subnet — another reason the allow-list exists.
+wired NICs or Wi-Fi adapters with Npcap/home-lab-friendly drivers. All
+home-lab traffic goes to *your own* switch/AP only, so nothing you do here
+can leave your subnet — another reason the allow-list exists.
+
+---
+
+## 🗺️ Roadmap
+
+- [ ] Schedules (bedtime mode) — per-device auto-disconnect windows.
+- [ ] Stranger guard — auto-block unknown devices that join the Wi-Fi.
+- [ ] Usage-by-hour bars.
+- [ ] Cross-platform caps/firewall/notifications (Linux/macOS).
+- [ ] Refactor `main.py` into `state.py` + `routes/`.
+
+---
+
+## 🤝 Contributing
+
+See `CONTRIBUTING.md`. PRs welcome, but `main` is protected: every change
+needs **one approving review** (from the maintainer) before it can merge.
+Open an issue first for anything non-trivial.
+
+## 🔒 Security
+
+See `SECURITY.md`. NetGuard is a *local network control tool*; the threat
+model assumes the host is trusted and the LAN is yours. The phone-access
+passcode is a convenience gate, not a security boundary.
+
+## 📄 License
+
+MIT — see `LICENSE`.
+
+## 🙏 Acknowledgements
+
+Built on [Scapy](https://scapy.net/), [FastAPI](https://fastapi.tiangolo.com/),
+[React](https://react.dev/), [Vite](https://vitejs.dev/) and
+[Tailwind CSS](https://tailwindcss.com/). Inspired by NetCut, but with the
+safety guardrails it never had.
