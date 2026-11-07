@@ -16,13 +16,10 @@ The short version: **install three things, then double-click `run.bat`.**
 1. Double-click **`run.bat`**.
 2. The first time, a console window appears and installs everything
    (Python packages + web page). This takes a minute or two. Wait for it.
-3. The app refuses to start on purpose: it opens `backend/config.yaml`.
-   Add your own Wi-Fi subnet, for example:
-   ```yaml
-   allowed_subnets:
-     - "192.168.1.0/24"
-   ```
-   (Windows: `ipconfig` to find your subnet; Linux/macOS: `ip -4 r`.)
+3. On a brand-new network, a small dialog asks whether to allow it — click
+   **Yes** only if it's your own Wi-Fi. NShield then remembers it; no manual
+   editing needed. (If `backend/config.yaml` is missing entirely, copy it
+   from `backend/config.example.yaml` first.)
 4. Double-click **`run.bat`** again. A small splash appears, then your
    browser opens on `http://127.0.0.1:8000`.
 

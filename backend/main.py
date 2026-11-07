@@ -2215,6 +2215,64 @@ else:
 # Entry point
 # --------------------------------------------------------------------------- #
 
+def _confirm_allow_network(cidr: str) -> bool:
+    msg = (
+        "NetGuard detected a network it is not allowed to operate on:\\n\\n"
+        "    " + cidr + "\\n\\n"
+        "Allow NetGuard to manage THIS network?\\n\\n"
+        "Only say Yes if this is YOUR network (your home/office Wi-Fi).\\n"
+        "Using NetGuard on a network you do not own may be illegal."
+    )
+    if sys.platform == "win32":
+        try:
+            import ctypes
+            MB_YESNO = 0x04
+            MB_ICONQUESTION = 0x20
+            MB_TOPMOST = 0x40000
+            res = ctypes.windll.user32.MessageBoxW(
+                None, msg, "NetGuard - new network detected",
+                MB_YESNO | MB_ICONQUESTION | MB_TOPMOST,
+            )
+            return res == 6  # IDYES
+        except Exception:
+            pass
+    try:
+        if sys.stdin is not None and sys.stdin.isatty():
+            ans = input("Allow NetGuard to manage " + cidr + "? [y/N] ").strip().lower()
+            return ans in ("y", "yes")
+    except Exception:
+        pass
+    return False
+
+
+def _add_subnet_to_config(path: Path, cidr: str) -> None:
+    try:
+        text = path.read_text(encoding="utf-8")
+    except FileNotFoundError:
+        return
+    lines = text.splitlines(keepends=True)
+    idx = None
+    for i, ln in enumerate(lines):
+        if ln.strip().startswith("allowed_subnets:"):
+            idx = i
+            break
+    if idx is None:
+        if not text.endswith("\\n"):
+            lines.append("\\n")
+        lines.append("allowed_subnets:\\n")
+        lines.append('  - "' + cidr + '"\\n')
+        path.write_text("".join(lines), encoding="utf-8")
+        return
+    j = idx + 1
+    while j < len(lines) and lines[j].strip().startswith("- "):
+        j += 1
+    existing = [ln for ln in lines[idx + 1:j]]
+    if any(cidr in ln for ln in existing):
+        return
+    lines.insert(j, '  - "' + cidr + '"\\n')
+    path.write_text("".join(lines), encoding="utf-8")
+
+
 def refuse_startup(reason: str) -> None:
     def row(text: str) -> str:
         return '| ' + text.ljust(64) + ' |'
@@ -2273,6 +2331,8 @@ def main() -> None:
         sys.exit(1)
 
     # 2. Guardrail: refuse to run outside the allow-listed subnets.
+    #    New network? Ask the user (GUI dialog, works even under pythonw) before
+    #    auto-adding it - keeps the safety intent while removing manual editing.
     try:
         subnets = [
             ipaddress.ip_network(s, strict=False)
@@ -2281,12 +2341,30 @@ def main() -> None:
     except ValueError as exc:
         refuse_startup(f"invalid allowed_subnets entry in config.yaml: {exc}")
     if not subnets:
-        refuse_startup("no subnet allow-listed in backend/config.yaml")
+        # Empty allow-list: offer to seed it with the current network.
+        cidr = net.get("cidr") or (net["ip"].rsplit(".", 1)[0] + ".0/24")
+        if _confirm_allow_network(cidr):
+            _add_subnet_to_config(BASE_DIR / "config.yaml", cidr)
+            cfg = load_config()
+            subnets = [ipaddress.ip_network(cidr, strict=False)]
+            logger.info("Allow-listed %s (user confirmed)", cidr)
+        else:
+            refuse_startup("no subnet allow-listed in backend/config.yaml")
     if not scanner.is_ip_in_subnets(net["ip"], subnets):
-        refuse_startup(
-            f"local IP {net['ip']} is NOT inside the allow-listed subnets "
-            f"({', '.join(str(s) for s in subnets)})"
-        )
+        cidr = net.get("cidr") or (net["ip"].rsplit(".", 1)[0] + ".0/24")
+        if _confirm_allow_network(cidr):
+            _add_subnet_to_config(BASE_DIR / "config.yaml", cidr)
+            cfg = load_config()
+            subnets = [
+                ipaddress.ip_network(s, strict=False)
+                for s in (cfg.get("allowed_subnets") or [])
+            ]
+            logger.info("Allow-listed %s (user confirmed)", cidr)
+        else:
+            refuse_startup(
+                f"local IP {net['ip']} is NOT inside the allow-listed subnets "
+                f"({', '.join(str(s) for s in subnets)})"
+            )
     logger.info("Compliance OK - %s inside %s", net["ip"], ", ".join(str(s) for s in subnets))
 
     privileged = is_privileged()
