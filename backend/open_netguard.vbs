@@ -3,8 +3,10 @@
 ' 2) then quietly elevates run.bat (Windows asks "Yes" once) to start the app
 Option Explicit
 
-Dim shell, shellX, root
-root = "C:\Users\GIGABYTE\Desktop\nshield"
+Dim shell, shellX, fso, root
+Set fso = CreateObject("Scripting.FileSystemObject")
+' This file lives in backend\, so its grandparent is the repo root.
+root = fso.GetParentFolderName(fso.GetParentFolderName(WScript.ScriptFullName))
 
 Set shell  = CreateObject("WScript.Shell")
 Set shellX = CreateObject("Shell.Application")
