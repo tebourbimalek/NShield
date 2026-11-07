@@ -1,5 +1,5 @@
 @echo off
-:: Build a standalone Windows bundle of NetGuard.
+:: Build a standalone Windows bundle of NShield.
 :: Requires: Python 3.11+, Node 18+, and (for the installer) Inno Setup 6.
 setlocal
 cd /d "%~dp0.."
@@ -17,9 +17,9 @@ backend\venv\Scripts\python.exe -m pip install pyinstaller
 if errorlevel 1 ( echo pip install failed & exit /b 1 )
 
 echo [3/4] Bundling with PyInstaller...
-backend\venv\Scripts\pyinstaller.exe packaging\netguard.spec --noconfirm
+backend\venv\Scripts\pyinstaller.exe packaging\nshield.spec --noconfirm
 if errorlevel 1 ( echo pyinstaller failed & exit /b 1 )
 
-echo [4/4] Done. Bundle is in dist\NetGuard\
+echo [4/4] Done. Bundle is in dist\NShield\
 echo        To make an installer, open packaging\installer.iss in Inno Setup.
 pause

@@ -1,6 +1,6 @@
-# NetGuard
+# NShield
 
-[![CI](https://github.com/tebourbimalek/NetGuard/actions/workflows/ci.yml/badge.svg)](https://github.com/tebourbimalek/NetGuard/actions/workflows/ci.yml)
+[![CI](https://github.com/tebourbimalek/NShield/actions/workflows/ci.yml/badge.svg)](https://github.com/tebourbimalek/NShield/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/)
 [![Platform: Windows-first](https://img.shields.io/badge/platform-Windows--first-0078D6.svg)]()
@@ -10,7 +10,7 @@
 > cut any device's internet with one toggle — NetCut-style isolation, but with
 > consent, an allow-list, auto-restore on exit, and a UI anyone can read.
 
-NetGuard discovers every device on your subnet (ARP scan), streams live status
+NShield discovers every device on your subnet (ARP scan), streams live status
 over a WebSocket, and — with one toggle per device — performs two-way ARP
 spoofing (NetCut-style isolation) to cut that device's traffic to the gateway.
 Turning the toggle (or the master switch) off sends restoration packets that
@@ -20,7 +20,7 @@ fix every touched ARP cache.
 TailwindCSS (dark & light UI, Lucide icons) · the Python process serves the
 built frontend, so the whole app is one local URL.
 
-> **Platform note:** NetGuard is **Windows-first**. Device blocking (ARP/NDP
+> **Platform note:** NShield is **Windows-first**. Device blocking (ARP/NDP
 > spoofing) and the web UI work on Linux/macOS too, but speed caps (Windows
 > QoS), the autostart task and the notification balloons are Windows-only.
 > See the cross-platform roadmap in `CONTRIBUTING.md`.
@@ -61,7 +61,7 @@ built frontend, so the whole app is one local URL.
 ## ⚠️ Legal & ethical warning
 
 ARP spoofing cuts traffic of devices on a network you **do not own** just as
-easily as on your own. Using NetGuard on networks without explicit
+easily as on your own. Using NShield on networks without explicit
 authorization (school, work, hotel, your landlord's Wi-Fi…) may be **illegal**
 (e.g. computer fraud / misuse laws) and is always a serious breach of trust
 that can disrupt other people's connectivity.
@@ -69,7 +69,7 @@ that can disrupt other people's connectivity.
 > **Only use on networks you own or have written permission to manage.
 > Unauthorized use may be illegal in your jurisdiction.**
 
-NetGuard enforces one guardrail for you, but you stay responsible for everything
+NShield enforces one guardrail for you, but you stay responsible for everything
 else:
 
 - The backend **refuses to start** until you list the subnet(s) you own in
@@ -98,7 +98,7 @@ Use it only on networks you own or have written permission to test.
 ## 📁 Project layout
 
 ```
-netguard/
+nshield/
 ├── run.bat                      # Windows launcher (self-elevates)
 ├── run.sh                       # Linux/macOS launcher (re-launches with sudo)
 ├── stop.bat                     # manual stop (advanced; the desktop icon toggles too)
@@ -119,7 +119,7 @@ netguard/
 │   └── src/                     # App.jsx, DeviceTable.jsx, useDevices.js, index.css …
 └── packaging/
     ├── build.bat                # builds frontend + PyInstaller bundle
-    ├── netguard.spec            # PyInstaller spec (windowless)
+    ├── nshield.spec            # PyInstaller spec (windowless)
     └── installer.iss            # Inno Setup installer
 ```
 
@@ -140,7 +140,7 @@ netguard/
    `backend/config.yaml` and allow-list your subnet — see *Configuration*
    below — then start `run.bat` again.
 
-A **NetGuard** shortcut is created on your Desktop on first run; click it to
+A **NShield** shortcut is created on your Desktop on first run; click it to
 start or stop the app afterwards (no console window, ever).
 
 ### Linux
@@ -185,16 +185,16 @@ port 8000.
 ## ⚙️ Configuration — `backend/config.yaml`
 
 ```yaml
-allowed_subnets:          # ← NetGuard REFUSES to start while this is empty!
+allowed_subnets:          # ← NShield REFUSES to start while this is empty!
   - "192.168.1.0/24"      # your own subnet (Windows: `ipconfig`, Linux: `ip -4 r`)
 scan_interval: 12         # seconds between live status pings
 arp_scan_timeout: 2       # ARP reply wait (seconds)
 spoof_interval: 2         # seconds between poison bursts per device
-log_file: logs/netguard.log
+log_file: logs/nshield.log
 server_port: 8000
 ```
 
-If your subnet mask is not a standard /24 (NetGuard defaults to /24 when the OS
+If your subnet mask is not a standard /24 (NShield defaults to /24 when the OS
 does not expose the mask), just set it here, e.g. `192.168.0.0/23`.
 
 Optional: full vendor names for every NIC — uncomment `manuf` in
@@ -220,13 +220,13 @@ Optional: full vendor names for every NIC — uncomment `manuf` in
 7. **Gear icon (Options)** — phone access passcode, start-with-Windows,
    alerts, and *Save a report* (CSV of usage, 7 or 30 days).
 8. **Sun/Moon icon** — switch between dark and light look.
-9. **Action log** — peek at `backend/logs/netguard.log` from the footer.
+9. **Action log** — peek at `backend/logs/nshield.log` from the footer.
 
 ### Phone access
 
 Enable *Phone access* in Options; a 4-digit passcode is minted. From any phone
 on the Wi-Fi, open the LAN URL shown in Options (or scan the QR code). The
-passcode is remembered on that phone. A firewall rule ("NetGuard page") is
+passcode is remembered on that phone. A firewall rule ("NShield page") is
 toggled with the setting. The passcode is a convenience gate, not a security
 boundary — see `SECURITY.md`.
 
@@ -234,14 +234,14 @@ boundary — see `SECURITY.md`.
 
 ## 📦 Building a standalone installer
 
-NetGuard ships as source. To produce a one-click Windows installer:
+NShield ships as source. To produce a one-click Windows installer:
 
 ```bash
-packaging\build.bat          # builds frontend + PyInstaller bundle -> dist\NetGuard\
+packaging\build.bat          # builds frontend + PyInstaller bundle -> dist\NShield\
 ```
 
 Then open `packaging\installer.iss` in Inno Setup 6 and compile. The result
-is `dist\NetGuard-Setup.exe`.
+is `dist\NShield-Setup.exe`.
 
 ---
 
@@ -249,14 +249,14 @@ is `dist\NetGuard-Setup.exe`.
 
 | Symptom | Fix |
 |---|---|
-| "NetGuard is NOT running with elevated privileges" | Windows: start `run.bat` as Administrator. Linux/macOS: `sudo ./run.sh`. |
+| "NShield is NOT running with elevated privileges" | Windows: start `run.bat` as Administrator. Linux/macOS: `sudo ./run.sh`. |
 | Scan finds nothing / scapy errors | Windows: is **Npcap** installed? Linux: `sudo apt install libpcap-dev`. |
-| Blocked devices come back online after ~30 s | Some router/APs detect ARP anomalies; NetGuard re-poisons every 2 s, which normally overrules this. |
+| Blocked devices come back online after ~30 s | Some router/APs detect ARP anomalies; NShield re-poisons every 2 s, which normally overrules this. |
 | `pip` refuses the pinned scapy version on your Python | `pip install --upgrade scapy` inside the venv — any 2.5+ works. |
 | Browser can't connect | Backend runs on `127.0.0.1:8000`; check the console window `run.bat` opened. |
 
 **Note for wireless Linux setups:** some managed-mode Wi-Fi drivers filter
-foreign ARP frames. NetGuard works best where raw ARP injection is allowed —
+foreign ARP frames. NShield works best where raw ARP injection is allowed —
 wired NICs or Wi-Fi adapters with Npcap/home-lab-friendly drivers. All
 home-lab traffic goes to *your own* switch/AP only, so nothing you do here
 can leave your subnet — another reason the allow-list exists.
@@ -281,7 +281,7 @@ Open an issue first for anything non-trivial.
 
 ## 🔒 Security
 
-See `SECURITY.md`. NetGuard is a *local network control tool*; the threat
+See `SECURITY.md`. NShield is a *local network control tool*; the threat
 model assumes the host is trusted and the LAN is yours. The phone-access
 passcode is a convenience gate, not a security boundary.
 

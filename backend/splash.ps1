@@ -1,4 +1,4 @@
-# NetGuard splash - visible while the hidden app starts.
+# NShield splash - visible while the hidden app starts.
 # Shows immediately after the desktop icon is clicked, polls the local app,
 # opens the page when it answers, then closes itself. No console anywhere.
 # Design: simple logo + loading dots. Nothing else.
@@ -37,7 +37,7 @@ function Test-PageOnTop {
     try {
         $sb = New-Object System.Text.StringBuilder 512
         [void][W.U32]::GetWindowTextW([W.U32]::GetForegroundWindow(), $sb, 512)
-        return ($sb.ToString() -clike '*NetGuard*')
+        return ($sb.ToString() -clike '*NShield*')
     } catch {
         return $false
     }
@@ -97,7 +97,7 @@ $form.BackColor        = [System.Drawing.Color]::FromArgb(10, 10, 11)
 $form.ForeColor        = [System.Drawing.Color]::FromArgb(229, 231, 235)
 $form.TopMost          = $true
 $form.ShowInTaskbar    = $true
-$form.Text             = 'NetGuard'
+$form.Text             = 'NShield'
 $form.DoubleBuffered   = $true
 $form.Opacity          = 0            # fade in - prevents any white first-paint flash
 if ($formIcon) { $form.Icon = $formIcon }

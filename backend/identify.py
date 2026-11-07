@@ -1,5 +1,5 @@
 """
-NetGuard - automatic device identification.
+NShield - automatic device identification.
 
 Devices tell the network what they are, in three "voices":
 
@@ -180,7 +180,7 @@ def web_probe(ip: str, mac: str) -> Optional[dict]:
             s.settimeout(1.2)
             s.sendall(
                 f"GET / HTTP/1.0\r\nHost: {ip}\r\n"
-                f"User-Agent: Mozilla/5.0 (NetGuard)\r\n\r\n".encode())
+                f"User-Agent: Mozilla/5.0 (NShield)\r\n\r\n".encode())
             chunks = b""
             while len(chunks) < 4096:
                 part = s.recv(2048)

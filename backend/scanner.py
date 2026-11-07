@@ -1,8 +1,8 @@
 """
-NetGuard — network discovery and host liveness via ARP (scapy).
+NShield — network discovery and host liveness via ARP (scapy).
 
 Everything in here is pure ARP/DNS + passive sniffing, no TCP traffic.
-All srp()/sniff() calls take an explicit iface so NetGuard always uses the
+All srp()/sniff() calls take an explicit iface so NShield always uses the
 interface detected at startup.
 """
 from __future__ import annotations
@@ -36,7 +36,7 @@ from scapy.all import (
     srp,
 )
 
-logger = logging.getLogger("netguard.scanner")
+logger = logging.getLogger("nshield.scanner")
 
 # --------------------------------------------------------------------------- #
 # Best-effort OUI vendor table (first three MAC octets).
@@ -340,7 +340,7 @@ def resolve_hostnames(
       * the caller waits at most `deadline` seconds in total and abandons
         stragglers (their results are then ignored),
       * stragglers are daemon threads, so whatever the OS resolver does, they
-        can never delay NetGuard's process exit.
+        can never delay NShield's process exit.
     """
     out: Dict[str, str] = {}
     unique = list(dict.fromkeys(ips))
@@ -365,7 +365,7 @@ def resolve_hostnames(
     threads: List[threading.Thread] = []
     for ip in unique:
         thread = threading.Thread(
-            target=_worker, args=(ip,), name="netguard-dns", daemon=True
+            target=_worker, args=(ip,), name="nshield-dns", daemon=True
         )
         thread.start()
         threads.append(thread)
@@ -445,7 +445,7 @@ def network_info() -> dict:
     mac = getattr(iface, "mac", None) or get_if_hwaddr(iface_name)
     if not ip or not mac:
         raise RuntimeError(
-            "NetGuard could not read the local IP/MAC "
+            "NShield could not read the local IP/MAC "
             "(is Npcap installed and an interface up?)"
         )
 
@@ -685,7 +685,7 @@ def start_passive_sniffer(
         except Exception as exc:
             logger.error("Passive sniffer stopped: %s", exc)
 
-    thread = threading.Thread(target=_runner_wrapped, name="netguard-sniffer", daemon=True)
+    thread = threading.Thread(target=_runner_wrapped, name="nshield-sniffer", daemon=True)
     thread.start()
     logger.info("Passive sniffer started on %s", iface)
     return thread

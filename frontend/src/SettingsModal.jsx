@@ -72,7 +72,7 @@ export default function SettingsModal({ open, onClose, onChanged, onExport }) {
     setPassDraft("");
     const headers = {};
     const p = getSavedPass();
-    if (p) headers["x-netguard-pass"] = p;
+    if (p) headers["x-nshield-pass"] = p;
     fetch("/api/settings", { headers })
       .then((r) => r.json())
       .then((payload) => {
@@ -95,7 +95,7 @@ export default function SettingsModal({ open, onClose, onChanged, onExport }) {
       // refetch
       const headers = {};
       const p = getSavedPass();
-      if (p) headers["x-netguard-pass"] = p;
+      if (p) headers["x-nshield-pass"] = p;
       const res = await fetch("/api/settings", { headers });
       setData(await res.json());
       onChanged?.();

@@ -16,7 +16,7 @@ import {
   X,
 } from "lucide-react";
 import DeviceTable, { Toggle } from "./DeviceTable";
-import NetGuardMark from "./NetGuardMark";
+import NShieldMark from "./NShieldMark";
 import SettingsModal from "./SettingsModal";
 import { useDevices } from "./useDevices";
 
@@ -95,7 +95,7 @@ function ConsentModal({ onAccept }) {
           onClick={onAccept}
           className="mt-6 w-full rounded-xl bg-gradient-to-r from-emerald-500 to-teal-500 py-3 font-medium text-black transition-all hover:brightness-110 disabled:cursor-not-allowed disabled:bg-zinc-800 disabled:text-zinc-600"
         >
-          Open NetGuard
+          Open NShield
         </button>
       </div>
     </div>
@@ -221,14 +221,14 @@ export default function App() {
 
   const [consented, setConsented] = useState(() => {
     try {
-      return window.localStorage.getItem("netguard-consent") === "1";
+      return window.localStorage.getItem("nshield-consent") === "1";
     } catch {
       return false;
     }
   });
   const acceptConsent = () => {
     try {
-      window.localStorage.setItem("netguard-consent", "1");
+      window.localStorage.setItem("nshield-consent", "1");
     } catch {
       /* private mode etc. - still proceed */
     }
@@ -240,7 +240,7 @@ export default function App() {
   // Daytime look: a simple re-pointing of the same palette (see index.css).
   const [light, setLight] = useState(() => {
     try {
-      return window.localStorage.getItem("netguard-theme") === "light";
+      return window.localStorage.getItem("nshield-theme") === "light";
     } catch {
       return false;
     }
@@ -250,7 +250,7 @@ export default function App() {
     if (light) root.setAttribute("data-theme", "light");
     else root.removeAttribute("data-theme");
     try {
-      window.localStorage.setItem("netguard-theme", light ? "light" : "dark");
+      window.localStorage.setItem("nshield-theme", light ? "light" : "dark");
     } catch { /* private mode */ }
   }, [light]);
 
@@ -268,7 +268,7 @@ export default function App() {
       <SafetyPanel>
         <div className="flex min-h-screen items-center justify-center">
           <div className="flex flex-col items-center gap-4 text-zinc-500">
-            <NetGuardMark size={46} accent="#E5E7EB" />
+            <NShieldMark size={46} accent="#E5E7EB" />
             <Loader2 className="animate-spin" size={20} />
           </div>
         </div>
@@ -292,10 +292,10 @@ export default function App() {
                   : "border-zinc-800 bg-zinc-900 text-zinc-200"
               }`}
             >
-              <NetGuardMark size={24} accent={master ? "#22D3EE" : "#E5E7EB"} />
+              <NShieldMark size={24} accent={master ? "#22D3EE" : "#E5E7EB"} />
             </div>
             <div>
-              <h1 className="text-lg font-bold leading-none tracking-tight">NetGuard</h1>
+              <h1 className="text-lg font-bold leading-none tracking-tight">NShield</h1>
               <p className="mt-1.5 text-xs text-zinc-500">Keep strangers off your Wi-Fi</p>
             </div>
           </div>

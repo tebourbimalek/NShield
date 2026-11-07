@@ -1,5 +1,5 @@
 @echo off
-:: NetGuard stopper.
+:: NShield stopper.
 :: Double-click and answer "Yes" when Windows asks for permission.
 :: This quietly ends the app in the background.
 :: TIP: if any device is currently cut off, press "Restore everyone" in the

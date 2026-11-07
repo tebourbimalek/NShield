@@ -1,11 +1,11 @@
-# Contributing to NetGuard
+# Contributing to NShield
 
-Thanks for helping out. NetGuard touches people's networks, so a few ground
+Thanks for helping out. NShield touches people's networks, so a few ground
 rules matter more than usual here.
 
 ## Before you start
 
-- NetGuard is **Windows-first** today. Speed caps (QoS) and the autostart
+- NShield is **Windows-first** today. Speed caps (QoS) and the autostart
   task are Windows-only; the ARP engine and the web UI work anywhere Python
   + scapy run. If you are adding a feature, decide which side of that line
   it lives on and document it.
@@ -52,4 +52,4 @@ Add a test for every behaviour change in `backend/main.py`.
 ## Reporting bugs
 
 Use the issue templates. Include your OS, Python version, and the tail of
-`backend/logs/netguard.log` (it contains no secrets beyond local IPs).
+`backend/logs/nshield.log` (it contains no secrets beyond local IPs).

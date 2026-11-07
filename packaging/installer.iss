@@ -1,11 +1,11 @@
-; Inno Setup script for NetGuard.
+; Inno Setup script for NShield.
 ; Compile with Inno Setup 6: iscc packaging\installer.iss
 
-#define MyAppName "NetGuard"
+#define MyAppName "NShield"
 #define MyAppVersion "1.0.0"
-#define MyAppPublisher "NetGuard contributors"
-#define MyAppURL "https://github.com/yourname/netguard"
-#define MyAppExeName "NetGuard.exe"
+#define MyAppPublisher "NShield contributors"
+#define MyAppURL "https://github.com/yourname/nshield"
+#define MyAppExeName "NShield.exe"
 
 [Setup]
 AppId={{B8F3A2C1-4D5E-6F70-8A9B-0C1D2E3F4A5B}
@@ -19,7 +19,7 @@ DefaultDirName={autopf}\{#MyAppName}
 DefaultGroupName={#MyAppName}
 DisableProgramGroupPage=yes
 OutputDir=..\dist
-OutputBaseFilename=NetGuard-Setup
+OutputBaseFilename=NShield-Setup
 Compression=lzma2
 SolidCompression=yes
 WizardStyle=modern
@@ -34,7 +34,7 @@ Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{
 Name: "autostart"; Description: "Start with Windows (recommended)"; GroupDescription: "Startup:"; Flags: checkedonce
 
 [Files]
-Source: "..\dist\NetGuard\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+Source: "..\dist\NShield\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Icons]
 Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"

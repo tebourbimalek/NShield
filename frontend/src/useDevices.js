@@ -12,7 +12,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
  * tick and after every action, plus {type:"new_device"} join alerts.
  */
 
-const PASS_KEY = "netguard-pass";
+const PASS_KEY = "nshield-pass";
 const JSON_HEADERS = { "Content-Type": "application/json" };
 
 export function getSavedPass() {
@@ -34,7 +34,7 @@ function savePass(code) {
 
 export async function post(url, body, pass = getSavedPass()) {
   const headers = { ...JSON_HEADERS };
-  if (pass) headers["x-netguard-pass"] = pass;
+  if (pass) headers["x-nshield-pass"] = pass;
   const res = await fetch(url, {
     method: "POST",
     headers,
@@ -49,7 +49,7 @@ export async function post(url, body, pass = getSavedPass()) {
 
 async function getJson(url, pass = getSavedPass()) {
   const headers = {};
-  if (pass) headers["x-netguard-pass"] = pass;
+  if (pass) headers["x-nshield-pass"] = pass;
   const res = await fetch(url, { headers });
   if (!res.ok) {
     const payload = await res.json().catch(() => ({}));
@@ -118,7 +118,7 @@ export function useDevices() {
     let alive = true;
     let reconnectTimer;
     const auth = () =>
-      passRef.current ? { "x-netguard-pass": passRef.current } : {};
+      passRef.current ? { "x-nshield-pass": passRef.current } : {};
 
     fetch("/api/self", { headers: auth() })
       .then((r) => {
@@ -321,13 +321,13 @@ export function useDevices() {
     try {
       const p = getSavedPass();
       const res = await fetch(`/api/export?days=${days}`, {
-        headers: p ? { "x-netguard-pass": p } : {},
+        headers: p ? { "x-nshield-pass": p } : {},
       });
       if (!res.ok) throw new Error("Could not make the report.");
       const blob = await res.blob();
       const a = document.createElement("a");
       a.href = URL.createObjectURL(blob);
-      a.download = "netguard-usage.csv";
+      a.download = "nshield-usage.csv";
       a.click();
       setTimeout(() => URL.revokeObjectURL(a.href), 2000);
     } catch (e) {

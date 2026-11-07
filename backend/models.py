@@ -1,5 +1,5 @@
 """
-NetGuard — Pydantic models shared by the REST API and WebSocket payloads.
+NShield — Pydantic models shared by the REST API and WebSocket payloads.
 """
 from __future__ import annotations
 

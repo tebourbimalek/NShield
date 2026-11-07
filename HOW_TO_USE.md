@@ -1,4 +1,4 @@
-# How to use NetGuard
+# How to use NShield
 
 The short version: **install three things, then double-click `run.bat`.**
 
@@ -28,9 +28,9 @@ The short version: **install three things, then double-click `run.bat`.**
 
 ## 3. Everyday use
 
-- Click the **NetGuard** icon on your desktop — no console window opens,
+- Click the **NShield** icon on your desktop — no console window opens,
   the page appears directly.
-- Click the **same icon again** to stop NetGuard (everything restores
+- Click the **same icon again** to stop NShield (everything restores
   automatically).
 - **Consent screen** (once): confirm it's your network.
 - **Protection switch** (top right): turns all blocking on/off.
@@ -46,7 +46,7 @@ protection off.
 
 ## 4. Stop
 
-Click the **NetGuard** desktop icon again — it stops the app and restores
+Click the **NShield** desktop icon again — it stops the app and restores
 everything automatically.
 
 (Advanced: `stop.bat` is still available if you ever need it.)
@@ -58,9 +58,9 @@ everything automatically.
 | "not running with elevated privileges" | Right-click `run.bat` → Run as administrator. |
 | Scan finds nothing | Is Npcap installed? |
 | Browser can't connect | Backend runs on `127.0.0.1:8000`; check the console. |
-| A device comes back online after ~30 s | NetGuard re-poisons every 2 s; usually resolves. |
+| A device comes back online after ~30 s | NShield re-poisons every 2 s; usually resolves. |
 
 ## More
 
 Full documentation: `README.md`. Source code and issues:
-https://github.com/tebourbimalek/NetGuard
+https://github.com/tebourbimalek/NShield
