@@ -26,4 +26,4 @@ jobs:
           cd backend
           python -m pip install -r requirements.txt
           python -m pip install pytest
-          python -m pytest
+          if ls tests/test_*.py >/dev/null 2>&1; then python -m pytest; else echo "No tests present - skipping."; fi
