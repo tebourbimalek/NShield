@@ -1,0 +1,31 @@
+name: Bug report
+description: Something is broken
+title: "[Bug] "
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you did and what went wrong.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected
+  - type: input
+    id: os
+    attributes:
+      label: OS
+      placeholder: "Windows 11 23H2"
+  - type: input
+    id: python
+    attributes:
+      label: Python version
+  - type: textarea
+    id: log
+    attributes:
+      label: Relevant log lines
+      description: Tail of backend/logs/netguard.log (no secrets beyond local IPs).
+      render: shell

@@ -1,0 +1,33 @@
+# =====================================================================
+#  NetGuard configuration
+# =====================================================================
+# SAFETY GUARDRAIL
+# NetGuard refuses to start unless the machine's local IP falls
+# inside one of the subnets listed below. This is intentional:
+# you must explicitly declare the network(s) you own and authorize
+# NetGuard to operate on before anything will run.
+#
+# Example:
+#   allowed_subnets:
+#     - "192.168.1.0/24"
+allowed_subnets:
+  - "192.168.1.0/24"
+
+# Live-status refresh interval (seconds). Each cycle sends a broadcast
+# ARP ping across the subnet to detect devices that went offline.
+scan_interval: 12
+
+# Seconds to wait for ARP replies during a subnet scan / status ping.
+arp_scan_timeout: 2
+
+# Seconds between ARP poison bursts per blocked device. Lower values are
+# more aggressive (faster re-poisoning against cache timeouts) but noisier.
+spoof_interval: 2
+
+# Log file — relative paths are resolved against the backend/ directory.
+# Every action (scan, block, unblock, master switch, shutdown restore)
+# is written here with timestamps.
+log_file: logs/netguard.log
+
+# Local HTTP port used by the backend + built frontend.
+server_port: 8000

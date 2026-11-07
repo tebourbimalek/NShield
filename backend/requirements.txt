@@ -1,0 +1,13 @@
+# NetGuard backend — Python 3.11+ (tested on 3.13)
+# If a pinned release is unavailable for your Python version,
+# install the latest stable instead: pip install --upgrade <package>
+
+fastapi==0.115.6
+uvicorn[standard]==0.32.1
+pydantic==2.10.3
+scapy==2.6.1
+PyYAML==6.0.2
+
+# Optional but recommended: full MAC-OUI vendor database
+# (the backend falls back to a small built-in OUI table without it)
+# manuf==1.2.2

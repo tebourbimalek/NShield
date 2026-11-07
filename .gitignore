@@ -1,0 +1,41 @@
+# ---- Python ---------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.egg
+.venv/
+venv/
+env/
+build/
+dist/
+
+# ---- Node / frontend -----------------------------------------------------
+node_modules/
+frontend/dist/
+frontend/.vite/
+
+# ---- NetGuard runtime data (personal: devices, names, passcode, usage) ----
+backend/data/known.json
+backend/data/usage.json
+backend/data/*.tmp
+backend/logs/
+*.log
+
+# ---- NetGuard local config (may contain your subnet / port) ---------------
+# Ship config.example.yaml instead; copy to config.yaml on first run.
+backend/config.yaml
+
+# ---- OS / editor ---------------------------------------------------------
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+*.swp
+
+# ---- Temp / diagnostics --------------------------------------------------
+_tmp_*
+_tmp_check*.py
+backend/_test_*.py
+C:\Users\GIGABYTE\AppData\Local\Temp\opencode\
+">
