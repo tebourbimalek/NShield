@@ -166,6 +166,10 @@ sudo ./run.sh
 python -m venv backend/venv
 backend/venv/bin/python -m pip install -r backend/requirements.txt   # Windows: backend\venv\Scripts\pip
 
+# first run only: create your config from the template
+cp backend/config.example.yaml backend/config.yaml   # Windows: copy backend\config.example.yaml backend\config.yaml
+# then edit backend/config.yaml and allow-list your subnet
+
 cd frontend && npm install && npm run build && cd ..
 
 sudo backend/venv/bin/python backend/main.py    # Windows: run terminal as Administrator
