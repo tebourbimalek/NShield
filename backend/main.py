@@ -2247,31 +2247,30 @@ def _confirm_allow_network(cidr: str) -> bool:
 
 def _add_subnet_to_config(path: Path, cidr: str) -> None:
     try:
-        text = path.read_text(encoding="utf-8")
+        text = path.read_text(encoding='utf-8')
     except FileNotFoundError:
         return
     lines = text.splitlines(keepends=True)
     idx = None
     for i, ln in enumerate(lines):
-        if ln.strip().startswith("allowed_subnets:"):
+        if ln.strip().startswith('allowed_subnets:'):
             idx = i
             break
     if idx is None:
-        if not text.endswith("\\n"):
-            lines.append("\\n")
-        lines.append("allowed_subnets:\\n")
-        lines.append('  - "' + cidr + '"\\n')
-        path.write_text("".join(lines), encoding="utf-8")
+        if not text.endswith('\n'):
+            lines.append('\n')
+        lines.append('allowed_subnets:' + '\n')
+        lines.append('  - "' + cidr + '"' + '\n')
+        path.write_text(''.join(lines), encoding='utf-8')
         return
     j = idx + 1
-    while j < len(lines) and lines[j].strip().startswith("- "):
+    while j < len(lines) and lines[j].strip().startswith('- '):
         j += 1
     existing = [ln for ln in lines[idx + 1:j]]
     if any(cidr in ln for ln in existing):
         return
-    lines.insert(j, '  - "' + cidr + '"\\n')
-    path.write_text("".join(lines), encoding="utf-8")
-
+    lines.insert(j, '  - "' + cidr + '"' + '\n')
+    path.write_text(''.join(lines), encoding='utf-8')
 
 def refuse_startup(reason: str) -> None:
     def row(text: str) -> str:
@@ -2330,9 +2329,10 @@ def main() -> None:
         logger.critical("Interface detection failed: %s", exc)
         sys.exit(1)
 
-    # 2. Guardrail: refuse to run outside the allow-listed subnets.
-    #    New network? Ask the user (GUI dialog, works even under pythonw) before
-    #    auto-adding it - keeps the safety intent while removing manual editing.
+    # 2. Auto-allow the current network so switching routers never blocks the app.
+    #    Safety preserved: only private (RFC1918) LANs are auto-allowed; public
+    #    IPs are still refused. Every auto-allow is appended to config.yaml and
+    #    logged to data/auto_allowed.log for auditing.
     try:
         subnets = [
             ipaddress.ip_network(s, strict=False)
@@ -2340,31 +2340,33 @@ def main() -> None:
         ]
     except ValueError as exc:
         refuse_startup(f"invalid allowed_subnets entry in config.yaml: {exc}")
-    if not subnets:
-        # Empty allow-list: offer to seed it with the current network.
-        cidr = net.get("cidr") or (net["ip"].rsplit(".", 1)[0] + ".0/24")
-        if _confirm_allow_network(cidr):
-            _add_subnet_to_config(BASE_DIR / "config.yaml", cidr)
-            cfg = load_config()
-            subnets = [ipaddress.ip_network(cidr, strict=False)]
-            logger.info("Allow-listed %s (user confirmed)", cidr)
-        else:
-            refuse_startup("no subnet allow-listed in backend/config.yaml")
-    if not scanner.is_ip_in_subnets(net["ip"], subnets):
-        cidr = net.get("cidr") or (net["ip"].rsplit(".", 1)[0] + ".0/24")
-        if _confirm_allow_network(cidr):
-            _add_subnet_to_config(BASE_DIR / "config.yaml", cidr)
-            cfg = load_config()
-            subnets = [
-                ipaddress.ip_network(s, strict=False)
-                for s in (cfg.get("allowed_subnets") or [])
-            ]
-            logger.info("Allow-listed %s (user confirmed)", cidr)
-        else:
+    cidr = net.get("cidr") or (net["ip"].rsplit(".", 1)[0] + ".0/24")
+    network = ipaddress.ip_network(cidr, strict=False)
+    if not subnets or not scanner.is_ip_in_subnets(net["ip"], subnets):
+        if not network.is_private:
             refuse_startup(
-                f"local IP {net['ip']} is NOT inside the allow-listed subnets "
-                f"({', '.join(str(s) for s in subnets)})"
+                f"local IP {net['ip']} is on a public network ({cidr}) - "
+                f"NetGuard only runs on private LANs."
             )
+        _add_subnet_to_config(BASE_DIR / "config.yaml", cidr)
+        try:
+            DATA_DIR.mkdir(parents=True, exist_ok=True)
+            with open(DATA_DIR / "auto_allowed.log", "a", encoding="utf-8") as fh:
+                fh.write(
+                    f"{time.strftime('%Y-%m-%d %H:%M:%S')}  auto-allowed {cidr} "
+                    f"(local IP {net['ip']})\n"
+                )
+        except Exception:
+            pass
+        logger.warning(
+            "AUTO-ALLOWED network %s (local IP %s). Review data/auto_allowed.log. "
+            "Remove it from backend/config.yaml to revoke.", cidr, net["ip"],
+        )
+        cfg = load_config()
+        subnets = [
+            ipaddress.ip_network(s, strict=False)
+            for s in (cfg.get("allowed_subnets") or [])
+        ]
     logger.info("Compliance OK - %s inside %s", net["ip"], ", ".join(str(s) for s in subnets))
 
     privileged = is_privileged()

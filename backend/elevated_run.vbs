@@ -1,11 +1,12 @@
 ' NShield - hidden elevated runner (no console window of its own).
-' Opened with "runas" by open_nshield.vbs. Runs the batch fully hidden,
+' Opened with "runas" by open_netguard.vbs. Runs the batch fully hidden,
 ' which avoids the white console flash Windows can show when a .bat is
 ' elevated directly.
 Option Explicit
 
-Dim shell, root
-root = "C:\Users\GIGABYTE\Desktop\nshield"
+Dim shell, fso, root
+Set fso = CreateObject("Scripting.FileSystemObject")
+root = fso.GetParentFolderName(fso.GetParentFolderName(WScript.ScriptFullName))
 
 Set shell = CreateObject("WScript.Shell")
 shell.CurrentDirectory = root
